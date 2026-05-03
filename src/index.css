@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0a0c0f;
+  --color-surface: #13171c;
+  --color-surface-2: #1a1f26;
+  --color-border: #252a31;
+  --color-border-dim: #1d2228;
+  --color-text: #e8e5dc;
+  --color-text-dim: #8a8e95;
+  --color-text-mute: #5a5e65;
+  --color-accent: #c9a961;
+  --color-accent-dim: #806a3d;
+  --color-danger: #c84a4a;
+
+  --color-type-unknown: #5aa8a8;
+  --color-type-fish: #5a7ba8;
+  --color-type-whale: #9568b0;
+  --color-type-nit: #5b8c5a;
+  --color-type-reg: #d4b94a;
+  --color-type-lag: #d68a3c;
+  --color-type-maniac: #c84a4a;
+  --color-type-watch: #c87aa8;
+
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif: "Instrument Serif", Georgia, serif;
+
+  --radius-xs: 2px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-feature-settings: "calt" 0, "liga" 0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+input,
+textarea,
+button,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+@utility section-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  font-weight: 500;
+}
