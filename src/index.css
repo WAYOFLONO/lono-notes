@@ -72,3 +72,16 @@ button {
   color: var(--color-text-dim);
   font-weight: 500;
 }
+
+.notes-editor img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 8px 0;
+  border: 1px solid var(--color-border-dim);
+  border-radius: var(--radius-xs);
+}
+
+.notes-editor:focus-visible {
+  outline: none;
+}

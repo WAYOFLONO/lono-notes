@@ -1,17 +1,25 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
+import { getDb, closeDb } from './main/db';
+import { registerIpcHandlers } from './main/ipc';
+import {
+  registerScreenshotsHandlers,
+  registerScreenshotsScheme,
+} from './main/screenshots';
 
 if (started) {
   app.quit();
 }
 
+registerScreenshotsScheme();
+
 const createMainWindow = () => {
   const mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    minWidth: 960,
-    minHeight: 600,
+    width: 800,
+    height: 560,
+    minWidth: 560,
+    minHeight: 360,
     backgroundColor: '#0a0c0f',
     title: 'Lono Notes',
     webPreferences: {
@@ -31,7 +39,12 @@ const createMainWindow = () => {
   }
 };
 
-app.on('ready', createMainWindow);
+app.on('ready', () => {
+  getDb();
+  registerIpcHandlers();
+  registerScreenshotsHandlers();
+  createMainWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -43,4 +56,8 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createMainWindow();
   }
+});
+
+app.on('before-quit', () => {
+  closeDb();
 });

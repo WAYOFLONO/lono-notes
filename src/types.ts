@@ -8,59 +8,16 @@ export type PlayerType =
   | 'maniac'
   | 'watch';
 
-export type Street = 'preflop' | 'flop' | 'turn' | 'river' | 'tells' | 'meta';
-
-export interface Exploit {
-  id: string;
-  text: string;
-  street: Street;
-  priority: number;
-  createdAt: string;
-}
-
-export interface Tag {
-  id: string;
-  text: string;
-  street: Street;
-}
-
-export interface Hand {
-  id: string;
-  date: string;
-  position?: string;
-  vsPosition?: string;
-  street?: Street;
-  action?: string;
-  sizing?: string;
-  result?: string;
-  freeform: string;
-}
-
 export interface Player {
   id: string;
   name: string;
   type: PlayerType;
-  exploits: Exploit[];
-  tags: Tag[];
-  hands: Hand[];
   notes: string;
   createdAt: string;
   lastSeen: string;
   lastTagged: string;
   encounters: number;
   starred: boolean;
-}
-
-export interface TableState {
-  id: 1 | 2 | 3 | 4;
-  playerNames: string[];
-  updatedAt: string;
-}
-
-export interface Preferences {
-  quickCaptureHotkey: string;
-  gameModeAlwaysOnTop: boolean;
-  staleDays: number;
 }
 
 export const PLAYER_TYPES: Record<PlayerType, { label: string; hex: string; letter: string }> = {
