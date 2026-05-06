@@ -58,8 +58,10 @@ const config: ForgeConfig = {
   ],
   hooks: {
     // plugin-vite ships only the bundled output into the asar; native deps need
-    // to be copied in manually, with the right-arch prebuild fetched.
-    packageAfterCopy: async (_forgeConfig, buildPath, electronVersion, platform, arch) => {
+    // to be copied in manually, with the right-arch prebuild fetched. Run in
+    // packageAfterPrune so it runs after @electron/rebuild — otherwise the
+    // rebuild step overwrites our prebuild fetch with the host arch.
+    packageAfterPrune: async (_forgeConfig, buildPath, electronVersion, platform, arch) => {
       const projRoot = process.cwd();
       const rootNm = path.join(projRoot, 'node_modules');
       const dstNm = path.join(buildPath, 'node_modules');
@@ -123,15 +125,22 @@ const config: ForgeConfig = {
         },
       ],
     }),
-    new FusesPlugin({
-      version: FuseVersion.V1,
-      [FuseV1Options.RunAsNode]: false,
-      [FuseV1Options.EnableCookieEncryption]: true,
-      [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-      [FuseV1Options.EnableNodeCliInspectArguments]: false,
-      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-      [FuseV1Options.OnlyLoadAppFromAsar]: true,
-    }),
+    // FusesPlugin needs `codesign` on the host machine to re-sign the binary
+    // after flipping fuses, so it can't run when cross-building darwin from
+    // Linux. Skip it for darwin targets and keep it for everything else.
+    ...(process.argv.some((a) => a.includes('darwin'))
+      ? []
+      : [
+          new FusesPlugin({
+            version: FuseVersion.V1,
+            [FuseV1Options.RunAsNode]: false,
+            [FuseV1Options.EnableCookieEncryption]: true,
+            [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
+            [FuseV1Options.EnableNodeCliInspectArguments]: false,
+            [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+            [FuseV1Options.OnlyLoadAppFromAsar]: true,
+          }),
+        ]),
   ],
 };
 
