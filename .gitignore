@@ -98,6 +98,13 @@ out/
 *.db-wal
 *.db-shm
 
+# Release artifacts
+/Lono-Notes-*.zip
+/Lono-Notes-*.tar.gz
+
+# Stray screenshots dropped into project root
+/Screenshot*.png
+
 # Editor / OS
 .idea/
 .vscode/
