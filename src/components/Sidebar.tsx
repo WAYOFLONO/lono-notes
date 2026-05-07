@@ -17,6 +17,7 @@ export function Sidebar() {
   const total = useStore((s) => Object.keys(s.players).length);
   const sortMode = useStore((s) => s.sortMode);
   const setSortMode = useStore((s) => s.setSortMode);
+  const typeLabels = useStore((s) => s.typeLabels);
 
   return (
     <aside className="flex min-h-0 flex-col border-r border-border bg-surface">
@@ -53,6 +54,7 @@ export function Sidebar() {
           <ul>
             {players.map((p) => {
               const meta = PLAYER_TYPES[p.type];
+              const label = typeLabels[p.type] ?? meta.label;
               const isSelected = p.id === selectedId;
               return (
                 <li key={p.id}>
@@ -68,7 +70,8 @@ export function Sidebar() {
                     <span
                       className="size-2 shrink-0 rounded-full"
                       style={{ backgroundColor: meta.hex }}
-                      aria-label={meta.label}
+                      title={label}
+                      aria-label={label}
                     />
                     <span className="flex-1 truncate">{p.name}</span>
                     {p.starred && <span className="text-accent text-xs">★</span>}

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import Fuse from 'fuse.js';
 import type { Player, PlayerType } from './types';
+import { PLAYER_TYPES } from './types';
 
 export type SortMode = 'alpha' | 'alphaDesc' | 'recent' | 'oldest';
 
@@ -12,6 +13,7 @@ interface State {
   error: string | null;
   sidebarCollapsed: boolean;
   sortMode: SortMode;
+  typeLabels: Partial<Record<PlayerType, string>>;
 
   loadAll: () => Promise<void>;
   addPlayer: (name: string) => Promise<Player>;
@@ -25,6 +27,8 @@ interface State {
   setQuery: (q: string) => void;
   toggleSidebar: () => void;
   setSortMode: (mode: SortMode) => void;
+  setTypeLabel: (type: PlayerType, label: string) => void;
+  labelForType: (type: PlayerType) => string;
 
   visiblePlayers: () => Player[];
   selectedPlayer: () => Player | null;
@@ -32,6 +36,7 @@ interface State {
 
 const SIDEBAR_KEY = 'lono.sidebarCollapsed';
 const SORT_KEY = 'lono.sortMode';
+const TYPE_LABELS_KEY = 'lono.typeLabels';
 const VALID_SORTS: SortMode[] = ['alpha', 'alphaDesc', 'recent', 'oldest'];
 
 const initialCollapsed = ((): boolean => {
@@ -50,6 +55,18 @@ const initialSortMode = ((): SortMode => {
     /* ignore */
   }
   return 'alpha';
+})();
+
+const initialTypeLabels = ((): Partial<Record<PlayerType, string>> => {
+  try {
+    const raw = localStorage.getItem(TYPE_LABELS_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') return parsed;
+  } catch {
+    /* ignore */
+  }
+  return {};
 })();
 
 const compareName = (a: Player, b: Player) =>
@@ -79,6 +96,7 @@ export const useStore = create<State>((set, get) => ({
   error: null,
   sidebarCollapsed: initialCollapsed,
   sortMode: initialSortMode,
+  typeLabels: initialTypeLabels,
 
   async loadAll() {
     set({ loading: true, error: null });
@@ -163,6 +181,28 @@ export const useStore = create<State>((set, get) => ({
       /* ignore */
     }
     set({ sortMode: mode });
+  },
+
+  setTypeLabel(type, label) {
+    set((s) => {
+      const next = { ...s.typeLabels };
+      const trimmed = label.trim();
+      if (trimmed === '' || trimmed === PLAYER_TYPES[type].label) {
+        delete next[type];
+      } else {
+        next[type] = trimmed;
+      }
+      try {
+        localStorage.setItem(TYPE_LABELS_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return { typeLabels: next };
+    });
+  },
+
+  labelForType(type) {
+    return get().typeLabels[type] ?? PLAYER_TYPES[type].label;
   },
 
   visiblePlayers() {
